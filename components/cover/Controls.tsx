@@ -219,10 +219,74 @@ export default function Controls() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
-               <Label>颜色</Label>
-               <ColorPicker color={store.text.color} onChange={(c) => store.updateText({ color: c })} />
-            </div>
+                        <div className="flex items-center justify-between">
+                            <Label>颜色</Label>
+                            <ColorPicker color={store.text.color} onChange={(c) => store.updateText({ color: c })} />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="use-custom-font">自定义字体</Label>
+                            <Switch
+                                id="use-custom-font"
+                                checked={store.text.useCustomFont}
+                                onCheckedChange={(checked) => store.updateText({ useCustomFont: !!checked })}
+                            />
+                        </div>
+
+                        {store.text.useCustomFont && (
+                            <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
+                                <div className="space-y-1">
+                                    <Label htmlFor="custom-font-name">字体名称</Label>
+                                    <Input
+                                        id="custom-font-name"
+                                        placeholder="例如：MyCustomFont"
+                                        value={store.text.customFontName}
+                                        onChange={(e) => store.updateText({ customFontName: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <Label htmlFor="custom-font-url">字体链接 (woff2)</Label>
+                                    <Input
+                                        id="custom-font-url"
+                                        placeholder="https://example.com/font.woff2"
+                                        value={store.text.customFontUrl}
+                                        onChange={(e) => store.updateText({ customFontUrl: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <Label htmlFor="fallback-font-family">备用字体族</Label>
+                                    <Input
+                                        id="fallback-font-family"
+                                        placeholder="var(--font-geist-sans)"
+                                        value={store.text.fontFamily}
+                                        onChange={(e) => store.updateText({ fontFamily: e.target.value })}
+                                    />
+                                </div>
+
+                                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                                    需要提供公开可访问的 woff2 链接，浏览器会在本地临时加载字体。
+                                </p>
+
+                                <div className="flex justify-end">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                            store.updateText({
+                                                useCustomFont: false,
+                                                customFontName: '',
+                                                customFontUrl: '',
+                                                fontFamily: 'var(--font-geist-sans)',
+                                            })
+                                        }
+                                    >
+                                        清除自定义字体
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
 
             <div className="space-y-2">
                <div className="flex justify-between items-center">

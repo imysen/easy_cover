@@ -20,6 +20,10 @@ interface TextSettings {
   x: number;
   y: number;
   rotation: number;
+  fontFamily: string;
+  useCustomFont: boolean;
+  customFontName: string;
+  customFontUrl: string;
 }
 
 interface IconSettings {
@@ -92,6 +96,10 @@ export const useCoverStore = create<CoverState>((set) => ({
     x: 0,
     y: 0,
     rotation: 0,
+    fontFamily: 'var(--font-geist-sans)',
+    useCustomFont: false,
+    customFontName: '',
+    customFontUrl: '',
   },
   icon: {
     name: 'logos:react',

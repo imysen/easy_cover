@@ -3,7 +3,8 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useCoverStore, RATIOS } from '@/store/useCoverStore';
 import { Icon } from '@iconify/react';
-import { cn } from '@/lib/utils';
+
+const loadedFontMap = new Map<string, string>();
 
 export default function Canvas() {
   const {
@@ -101,6 +102,46 @@ export default function Canvas() {
       );
   };
 
+  const fallbackFontFamily = text.fontFamily?.trim().length
+    ? text.fontFamily
+    : 'var(--font-geist-sans)';
+  const customFontName = text.customFontName.trim();
+  const customFontUrl = text.customFontUrl.trim();
+  const customFontActive = text.useCustomFont && !!customFontName && !!customFontUrl;
+
+  useEffect(() => {
+    if (!customFontActive) {
+      return;
+    }
+
+    if (typeof FontFace === 'undefined') {
+      console.warn('[EasyCover] FontFace API is not available in this browser.');
+      return;
+    }
+
+    if (loadedFontMap.get(customFontName) === customFontUrl) {
+      return;
+    }
+
+    let cancelled = false;
+    const fontFace = new FontFace(customFontName, `url(${customFontUrl}) format('woff2')`);
+
+    fontFace
+      .load()
+      .then((loadedFont) => {
+        if (cancelled) return;
+        document.fonts.add(loadedFont);
+        loadedFontMap.set(customFontName, customFontUrl);
+      })
+      .catch((error) => {
+        console.warn('[EasyCover] Failed to load custom font', error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [customFontActive, customFontName, customFontUrl]);
+
   // Helper to render Text
   const renderText = (content: string) => (
       <div
@@ -111,6 +152,9 @@ export default function Canvas() {
               color: text.color,
               fontWeight: text.fontWeight,
               WebkitTextStroke: text.strokeWidth > 0 ? `${text.strokeWidth}px ${text.strokeColor}` : undefined,
+              fontFamily: customFontActive
+                ? `${customFontName}, ${fallbackFontFamily}`
+                : fallbackFontFamily,
           }}
       >
           {content}
